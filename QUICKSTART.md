@@ -1,9 +1,19 @@
 # 🚀 Guía de Inicio Rápido - Fitness Dashboard
 
-## ⚡ Inicio Rápido (3 pasos)
+## ⚡ Inicio Rápido (4 pasos)
+
+### 0. Clonar el Repositorio (si aún no lo tienes)
+```bash
+git clone https://github.com/henrymm04/fitness-dashboard.git
+cd fitness-dashboard
+```
 
 ### 1. Configurar Ruta de Datos
-Edita `config/settings.py` línea 7:
+
+**Opción A:** Reemplaza el archivo de ejemplo
+- Copia tu archivo CSV de Google Fit a `data/metricas_actividad_diaria.csv`
+
+**Opción B:** Edita la ruta en `config/settings.py` línea 7:
 ```python
 DATA_PATH = r'C:\TU_RUTA\Métricas de actividad diaria.csv'
 ```
