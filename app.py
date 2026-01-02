@@ -201,15 +201,27 @@ register_advanced_callbacks(app, df)
 register_conclusions_callbacks(app, df)
 
 
+# Servidor para producción
+server = app.server
+
 if __name__ == '__main__':
+    import os
     print("=" * 60)
     print("💪 Iniciando Dashboard de Fitness")
     print("=" * 60)
-    print(f"🌐 Abriendo en: http://127.0.0.1:{PORTS['main']}/")
-    print("=" * 60)
     
-    app.run_server(
-        debug=True,
-        host='127.0.0.1',
-        port=PORTS['main']
-    )
+    # Detectar si estamos en producción o desarrollo
+    is_production = os.environ.get('RENDER') is not None
+    
+    if is_production:
+        # Render usará gunicorn automáticamente
+        port = int(os.environ.get('PORT', 10000))
+        print(f"🌐 Modo producción - Puerto: {port}")
+    else:
+        print(f"🌐 Abriendo en: http://127.0.0.1:{PORTS['main']}/")
+        print("=" * 60)
+        app.run_server(
+            debug=True,
+            host='127.0.0.1',
+            port=PORTS['main']
+        )
