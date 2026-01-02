@@ -18,6 +18,52 @@ def load_fitness_data():
     except UnicodeDecodeError:
         df = pd.read_csv(DATA_PATH, encoding='latin-1')
     
+    # Mapear columnas en inglés a español para compatibilidad con el resto del código
+    column_mapping = {
+        'Date': 'Fecha',
+        'Step count': 'Recuento de pasos',
+        'Distance (m)': 'Distancia (m)',
+        'Calories (kcal)': 'Calorías (kcal)',
+        'Move Minutes count': 'Recuento de Minutos Activos',
+        'Active minutes count': 'Recuento de Minutos Activos',
+        'Heart Minutes': 'Recuento de Minutos Activos',
+        'Heart Points': 'Puntos Cardio',
+        'Cardio minutes': 'Minutos de cardio',
+        'Average speed (m/s)': 'Velocidad media (m/s)',
+        'Max speed (m/s)': 'Velocidad máxima (m/s)',
+        'Average weight (kg)': 'Peso medio (kg)',
+        'Max weight (kg)': 'Peso máximo (kg)',
+        'Min weight (kg)': 'Peso mínimo (kg)',
+        'Average heart rate (bpm)': 'Frecuencia cardiaca media (ppm)',
+        'Max heart rate (bpm)': 'Frecuencia cardiaca máxima (ppm)',
+        'Min heart rate (bpm)': 'Frecuencia cardiaca mínima (ppm)'
+    }
+    
+    # Renombrar columnas que existan
+    df.rename(columns={k: v for k, v in column_mapping.items() if k in df.columns}, inplace=True)
+    
+    # Eliminar columnas duplicadas (mantener solo la primera ocurrencia)
+    df = df.loc[:, ~df.columns.duplicated()]
+    
+    # Crear columnas faltantes con valores por defecto si no existen
+    required_columns = {
+        'Recuento de Minutos Activos': 0,
+        'Velocidad media (m/s)': 0,
+        'Velocidad máxima (m/s)': 0,
+        'Peso medio (kg)': 0,
+        'Peso promedio (kg)': 0,
+        'Peso máximo (kg)': 0,
+        'Peso mínimo (kg)': 0,
+        'Frecuencia cardiaca media (ppm)': 0,
+        'Frecuencia cardiaca máxima (ppm)': 0,
+        'Frecuencia cardiaca mínima (ppm)': 0,
+        'Minutos de cardio': 0,
+        'Puntos Cardio': 0
+    }
+    for col, default_value in required_columns.items():
+        if col not in df.columns:
+            df[col] = default_value
+    
     # Convertir fecha
     df['Fecha'] = pd.to_datetime(df['Fecha'], format='%Y-%m-%d')
     

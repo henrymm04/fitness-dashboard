@@ -22,6 +22,28 @@ from src.visualizations.advanced_charts import (
 def register_advanced_callbacks(app, df):
     """Registra todos los callbacks del dashboard avanzado"""
     
+    # Callback para sincronizar fechas al Store compartido
+    @callback(
+        Output('shared-date-store', 'data', allow_duplicate=True),
+        Input('adv-date-range', 'start_date'),
+        Input('adv-date-range', 'end_date'),
+        prevent_initial_call=True
+    )
+    def sync_adv_dates(start_date, end_date):
+        """Actualiza el store compartido cuando cambian las fechas en análisis avanzado"""
+        return {'start_date': start_date, 'end_date': end_date}
+    
+    # Callback para actualizar el DatePickerRange desde el Store
+    @callback(
+        Output('adv-date-range', 'start_date', allow_duplicate=True),
+        Output('adv-date-range', 'end_date', allow_duplicate=True),
+        Input('shared-date-store', 'data'),
+        prevent_initial_call=True
+    )
+    def update_adv_date_picker(date_data):
+        """Actualiza el DatePickerRange cuando cambia el store compartido"""
+        return date_data['start_date'], date_data['end_date']
+    
     @callback(
         Output('adv-total-steps', 'children'),
         Output('adv-avg-steps', 'children'),

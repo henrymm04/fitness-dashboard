@@ -52,6 +52,19 @@ def create_heatmap_calendar(df):
 
 def create_weight_trend_chart(df):
     """Crea gráfico de evolución de peso"""
+    # Verificar si existe la columna y tiene datos
+    if 'Peso medio (kg)' not in df.columns or df['Peso medio (kg)'].sum() == 0:
+        # Crear gráfico vacío con mensaje
+        fig = go.Figure()
+        fig.add_annotation(
+            text="No hay datos de peso disponibles",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5, showarrow=False,
+            font=dict(size=16, color="#8892ab")
+        )
+        fig.update_layout(**CHART_CONFIG, height=300)
+        return fig
+    
     weight_data = df[df['Peso medio (kg)'] > 0].copy()
     
     fig = go.Figure()
@@ -111,17 +124,37 @@ def create_speed_analysis_chart(df):
 
 def create_heart_rate_chart(df):
     """Crea gráfico de frecuencia cardíaca"""
+    # Verificar si existe la columna y tiene datos
+    if 'Frecuencia cardiaca media (ppm)' not in df.columns or df['Frecuencia cardiaca media (ppm)'].sum() == 0:
+        # Crear gráfico vacío con mensaje
+        fig = go.Figure()
+        fig.add_annotation(
+            text="No hay datos de frecuencia cardíaca disponibles",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5, showarrow=False,
+            font=dict(size=16, color="#8892ab")
+        )
+        fig.update_layout(**CHART_CONFIG, height=300)
+        return fig
+    
     hr_data = df[df['Frecuencia cardiaca media (ppm)'] > 0].copy()
     
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=hr_data['Fecha'],
-        y=hr_data['Frecuencia cardiaca máxima (ppm)'],
-        mode='lines',
-        name='FC Máxima',
-        line=dict(color=COLORS['secondary'], width=1),
-        fill=None
-    ))
+    
+    # Verificar qué columnas de frecuencia cardíaca existen
+    has_max = 'Frecuencia cardiaca máxima (ppm)' in hr_data.columns and hr_data['Frecuencia cardiaca máxima (ppm)'].sum() > 0
+    has_min = 'Frecuencia cardiaca mínima (ppm)' in hr_data.columns and hr_data['Frecuencia cardiaca mínima (ppm)'].sum() > 0
+    
+    if has_max:
+        fig.add_trace(go.Scatter(
+            x=hr_data['Fecha'],
+            y=hr_data['Frecuencia cardiaca máxima (ppm)'],
+            mode='lines',
+            name='FC Máxima',
+            line=dict(color=COLORS['secondary'], width=1),
+            fill=None
+        ))
+    
     fig.add_trace(go.Scatter(
         x=hr_data['Fecha'],
         y=hr_data['Frecuencia cardiaca media (ppm)'],
@@ -129,15 +162,17 @@ def create_heart_rate_chart(df):
         name='FC Media',
         line=dict(color=COLORS['primary'], width=2)
     ))
-    fig.add_trace(go.Scatter(
-        x=hr_data['Fecha'],
-        y=hr_data['Frecuencia cardíaca mínima (ppm)'],
-        mode='lines',
-        name='FC Mínima',
-        line=dict(color=COLORS['success'], width=1),
-        fill='tonexty',
-        fillcolor='rgba(0, 212, 255, 0.1)'
-    ))
+    
+    if has_min:
+        fig.add_trace(go.Scatter(
+            x=hr_data['Fecha'],
+            y=hr_data['Frecuencia cardiaca mínima (ppm)'],
+            mode='lines',
+            name='FC Mínima',
+            line=dict(color=COLORS['success'], width=1),
+            fill='tonexty',
+            fillcolor='rgba(0, 212, 255, 0.1)'
+        ))
     
     fig.update_layout(
         **CHART_CONFIG,
@@ -212,7 +247,24 @@ def create_goals_progress_chart(df):
 
 def create_intensity_chart(df):
     """Crea gráfico de intensidad de entrenamiento"""
+    # Verificar si existen las columnas y tienen datos
+    if 'Minutos de cardio' not in df.columns or df['Minutos de cardio'].sum() == 0:
+        # Crear gráfico vacío con mensaje
+        fig = go.Figure()
+        fig.add_annotation(
+            text="No hay datos de intensidad de cardio disponibles",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5, showarrow=False,
+            font=dict(size=16, color="#8892ab")
+        )
+        fig.update_layout(**CHART_CONFIG, height=300)
+        return fig
+    
     intensity_data = df[df['Minutos de cardio'] > 0].copy()
+    
+    # Verificar si existe columna de Puntos Cardio
+    if 'Puntos Cardio' not in intensity_data.columns:
+        intensity_data['Puntos Cardio'] = 0
     
     fig = go.Figure()
     fig.add_trace(go.Scatter(

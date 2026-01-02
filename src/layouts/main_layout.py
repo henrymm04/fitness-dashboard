@@ -24,6 +24,12 @@ def create_main_layout(first_date, last_date, total_days):
     Returns:
         dbc.Container: Layout completo
     """
+    # Convertir Pandas Timestamp a datetime si es necesario
+    if hasattr(first_date, 'to_pydatetime'):
+        first_date = first_date.to_pydatetime()
+    if hasattr(last_date, 'to_pydatetime'):
+        last_date = last_date.to_pydatetime()
+    
     return dbc.Container([
         # Header
         dbc.Row([
@@ -77,9 +83,9 @@ def create_main_layout(first_date, last_date, total_days):
                         display_format='DD/MM/YYYY',
                         style={'width': '100%'}
                     )
-                ], style=CARD_STYLE)
+                ], style={**CARD_STYLE, 'position': 'relative', 'z-index': '1000'})
             ])
-        ], className='mb-4'),
+        ], className='mb-4', style={'position': 'relative', 'z-index': '1000'}),
         
         # Gráficos principales
         dbc.Row([

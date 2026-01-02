@@ -17,6 +17,7 @@ from src.layouts.advanced_layout import create_advanced_layout
 from src.layouts.conclusions_layout import create_conclusions_layout
 from src.callbacks.main_callbacks import register_main_callbacks
 from src.callbacks.advanced_callbacks import register_advanced_callbacks
+from src.callbacks.conclusions_callbacks import register_conclusions_callbacks
 
 
 # HTML personalizado para el date picker
@@ -95,8 +96,25 @@ app.index_string = index_string
 df = load_fitness_data()
 min_date, max_date = get_date_range(df)
 
+# Establecer rango de fechas por defecto (1 enero 2025 - 31 diciembre 2025)
+from datetime import datetime
+default_start_date = datetime(2025, 1, 1)
+default_end_date = datetime(2025, 12, 31)
+
+# Ajustar si las fechas por defecto están fuera del rango de datos disponibles
+if default_start_date < min_date:
+    default_start_date = min_date
+if default_end_date > max_date:
+    default_end_date = max_date
+
 # Layout principal con pestañas
 app.layout = dbc.Container([
+    # Store compartido para sincronizar fechas entre pestañas
+    dcc.Store(id='shared-date-store', data={
+        'start_date': default_start_date.strftime('%Y-%m-%d'),
+        'end_date': default_end_date.strftime('%Y-%m-%d')
+    }),
+    
     # Header
     dbc.Row([
         dbc.Col([
@@ -163,18 +181,24 @@ app.layout = dbc.Container([
     Input('tabs', 'active_tab')
 )
 def render_tab_content(active_tab):
+    # Calcular días activos
+    total_days = len(df[df['Recuento de pasos'] > 0])
+    
     if active_tab == "tab-principal":
-        return create_main_layout(df, min_date, max_date)
+        return create_main_layout(default_start_date, default_end_date, total_days)
     elif active_tab == "tab-avanzado":
-        return create_advanced_layout(df, min_date, max_date)
+        return create_advanced_layout(default_start_date, default_end_date)
     elif active_tab == "tab-conclusiones":
-        return create_conclusions_layout(df)
+        from src.utils.data_loader import filter_data_by_date
+        filtered_df = filter_data_by_date(df, default_start_date, default_end_date)
+        return create_conclusions_layout(default_start_date, default_end_date, filtered_df)
     return html.Div("Selecciona una pestaña")
 
 
 # Registrar callbacks de cada sección
 register_main_callbacks(app, df)
 register_advanced_callbacks(app, df)
+register_conclusions_callbacks(app, df)
 
 
 if __name__ == '__main__':

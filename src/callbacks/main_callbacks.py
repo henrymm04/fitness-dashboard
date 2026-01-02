@@ -21,6 +21,28 @@ from src.visualizations.basic_charts import (
 def register_main_callbacks(app, df):
     """Registra todos los callbacks del dashboard principal"""
     
+    # Callback para sincronizar fechas al Store compartido
+    @callback(
+        Output('shared-date-store', 'data', allow_duplicate=True),
+        Input('date-range', 'start_date'),
+        Input('date-range', 'end_date'),
+        prevent_initial_call=True
+    )
+    def sync_main_dates(start_date, end_date):
+        """Actualiza el store compartido cuando cambian las fechas en el dashboard principal"""
+        return {'start_date': start_date, 'end_date': end_date}
+    
+    # Callback para actualizar el DatePickerRange desde el Store
+    @callback(
+        Output('date-range', 'start_date', allow_duplicate=True),
+        Output('date-range', 'end_date', allow_duplicate=True),
+        Input('shared-date-store', 'data'),
+        prevent_initial_call=True
+    )
+    def update_main_date_picker(date_data):
+        """Actualiza el DatePickerRange cuando cambia el store compartido"""
+        return date_data['start_date'], date_data['end_date']
+    
     @callback(
         Output('total-steps', 'children'),
         Output('avg-steps', 'children'),

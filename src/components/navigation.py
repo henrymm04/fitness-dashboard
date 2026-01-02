@@ -49,22 +49,9 @@ def create_navigation_menu():
     Crea el menú de navegación completo
     
     Returns:
-        html.Div: Menú de navegación
+        html.Div: Menú de navegación vacío (botones removidos)
     """
-    return html.Div([
-        create_nav_button(
-            "Ver Análisis y Conclusiones Detalladas",
-            PORTS['conclusions'],
-            "🎯",
-            (COLORS['primary'], COLORS['secondary'])
-        ),
-        create_nav_button(
-            "Análisis Avanzado",
-            PORTS['advanced'],
-            "🚀",
-            (COLORS['success'], COLORS['warning'])
-        )
-    ], style={'text-align': 'center', 'margin-bottom': '20px'})
+    return html.Div([], style={'text-align': 'center', 'margin-bottom': '20px'})
 
 
 def create_back_button(target_port, text="Volver al Dashboard Principal"):

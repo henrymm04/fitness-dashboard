@@ -63,9 +63,9 @@ def create_advanced_layout(first_date, last_date):
                         end_date=last_date,
                         display_format='DD/MM/YYYY'
                     )
-                ], style=CARD_STYLE)
+                ], style={**CARD_STYLE, 'position': 'relative', 'z-index': '1000'})
             ])
-        ], className='mb-4'),
+        ], className='mb-4', style={'position': 'relative', 'z-index': '1000'}),
         
         # Visualizaciones avanzadas
         dbc.Row([

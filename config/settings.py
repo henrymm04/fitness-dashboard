@@ -4,7 +4,7 @@ Configuración global del dashboard de fitness
 import os
 
 # Ruta al archivo CSV de datos
-DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'metricas_actividad_diaria.csv')
+DATA_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'Daily activity metrics.csv')
 
 # Puertos de los servidores
 PORTS = {
